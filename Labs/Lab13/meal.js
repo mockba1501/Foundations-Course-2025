@@ -2,16 +2,19 @@
 let randomMealURL = 'https://www.themealdb.com/api/json/v1/1/random.php';
 
 //2- Link to lookup a specific meal with an id
-//https://www.themealdb.com/api/json/v1/1/lookup.php?i=
+let mealURL = 'https://www.themealdb.com/api/json/v1/1/lookup.php?i='
 
 //3- Link to search for meals using a keyword
-//https://www.themealdb.com/api/json/v1/1/search.php?s=
+let searchURL = 'https://www.themealdb.com/api/json/v1/1/search.php?s='
 
 const mealsElement = document.getElementById("meals");
 const favorites = document.querySelector(".favorites");
+const searchTerm = document.querySelector("#search-term");
+const searchBtn = document.querySelector("#search");
 
-//async function getRadnomMeal() {
-const getRadnomMeal = async ()=> {
+
+//async function getRandomMeal() {
+const getRandomMeal = async ()=> {
    /* fetch(randomMealURL)
     .then((item)=> item.json())
     .then((data)=>console.log(data.meals[0]))
@@ -22,16 +25,17 @@ const getRadnomMeal = async ()=> {
    //console.log(data.meals[0]);
    const randomMeal = data.meals[0];
 
-   addMeal(randomMeal);
+   mealsElement.innerHTML = "";
+   addMeal(randomMeal,true);
 }
 
-const addMeal = (mealData)=> {
+const addMeal = (mealData, random=false)=> {
    const meal = document.createElement('div');
    meal.classList.add('meal');
 
    meal.innerHTML = `
                <div class="meal-header">
-                        <span class="random">Meal of the Day</span>
+                        ${random?`<span class="random">Meal of the Day</span>`:""}
                         <img 
                         src="${mealData.strMealThumb}" 
                         alt="${mealData.strMeal}">
@@ -67,8 +71,11 @@ const addMeal = (mealData)=> {
       })
    }
    mealsElement.appendChild(meal);
-   updateFavoriteMeals();
-
+   
+   const mealHeader = meal.querySelector('.meal-header');
+   mealHeader.addEventListener('click', ()=>{
+      OpenMealDetailsPage(mealData);
+   })
 }
 
 const addMealsToLocalStorage = (mealId)=> {
@@ -106,7 +113,7 @@ const updateFavoriteMeals = ()=> {
 }
 
 const getMealByID = async (id) => {
-   const resp = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i='+id);
+   const resp = await fetch(mealURL+id);
 
    const data = await resp.json();
    //console.log(data);
@@ -134,6 +141,61 @@ const addMealToFavorites = (meal)=> {
       updateFavoriteMeals();
    })
    favorites.appendChild(favoriteMeal);
+
+   const favImg = favoriteMeal.querySelector("#fav-img");
+   favImg.addEventListener('click', ()=>{
+      OpenMealDetailsPage(meal);
+   });
 }
 
-getRadnomMeal();
+const initMain = () => {
+   getRandomMeal();
+   updateFavoriteMeals();
+
+   searchBtn.addEventListener('click', ()=>{
+      const searchWord = searchTerm.value;
+      console.log(searchWord);
+
+      searchForMeal(searchWord);
+   });
+
+   searchTerm.addEventListener('input', ()=>{
+      const searchWord = searchTerm.value;
+      console.log(searchWord);
+   
+      searchForMeal(searchWord);
+   }); 
+}
+
+//Displaying the searched meals
+const searchForMeal = async (word) => {
+   const searchResults = await getMealsBySearch(word);
+   console.log(searchResults);
+
+   mealsElement.innerHTML = "";
+   if(searchResults)
+      searchResults.forEach((meal)=>addMeal(meal));
+}
+
+//Searching the meals
+const getMealsBySearch = async (word) => {
+   const resp = await fetch(searchURL+word);
+   const data = await resp.json();
+   const output = data.meals;
+   //console.log(output)
+
+   return output;
+}
+
+const OpenMealDetailsPage = (meal)=> {
+   window.open("details.html?mealId="+meal.idMeal,"_self");
+}
+
+const initDetailsPage = ()=>{
+   const urlParams = new URLSearchParams(window.location.search);
+   //console.log(urlParams);
+   let mealId = urlParams.get('mealId');
+   console.log(mealId);
+
+   //Reference our html 
+}
