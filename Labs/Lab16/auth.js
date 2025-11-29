@@ -12,7 +12,7 @@ import { firebaseConfig } from "./config.js";
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       console.log(userCredential);
-      return userCredential;
+      return userCredential.user;
     }
     catch(error){
         const errorCode = error.code;

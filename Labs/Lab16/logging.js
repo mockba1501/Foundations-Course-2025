@@ -19,9 +19,9 @@ signupBtn.addEventListener("click", async (e)=>{
     //console.log("Sign Up Clicked!", email, password);
     try{
         const user = await signup(email, password);
-        showMessage("signup successful. Welcome ", user.email);
+        showMessage("signup successful. Welcome " + user.email);
         setTimeout(()=> {
-            window.location.ref = "app.html";
+            window.location.href = "app.html";
         }, 1000)
     }
     catch (error){
