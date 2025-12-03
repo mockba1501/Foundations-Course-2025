@@ -204,6 +204,7 @@ button:disabled {
 .entry-title {
     flex: 2; /* takes more space */
     font-weight: 500;
+    cursor: pointer;
 }
 
 .entry-date {

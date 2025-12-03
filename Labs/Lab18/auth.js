@@ -45,3 +45,9 @@ import { auth } from './firebase.js'
         console.log(errorCode, errorMessage);
     }
   }
+
+  export const onChangeAuth = (callback) => {
+    return onAuthStateChanged(auth, user => {
+      callback(user)
+    })
+  }

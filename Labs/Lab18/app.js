@@ -1,13 +1,13 @@
-import {logout} from './auth.js';
+import {logout, onChangeAuth} from './auth.js';
 import { readEntries } from './firestore.js';
 
 const logoutBtn = document.querySelector("#logout");
 const messageDiv = document.getElementById("message");
+const addEntryBtn = document.getElementById("addEntryBtn");
 
 logoutBtn.addEventListener('click', async ()=> {
     try {
         await logout();
-        window.location.href = "index.html";
     }
     catch (error) {
         console.error("Logout failed", error);
@@ -15,9 +15,24 @@ logoutBtn.addEventListener('click', async ()=> {
     }
 })
 
-const results = await readEntries();
+addEntryBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    console.log("Adding new entry!");
+    window.location.href = "entry-editor.html?mode=new";
+})
 
-/*
+onChangeAuth(async (user) => {
+    if(!user)
+    {
+        window.location.href = "index.html";
+        return;
+    }
+    
+    const results = await readEntries(user.uid);
+    //console.log(results);
+    updateEntriesList(results);
+})
+
 function updateEntriesList(entries) {
     console.log("Updating entries list with entries:", entries);
     const entriesList = document.getElementById("entriesList");
@@ -45,7 +60,27 @@ function updateEntriesList(entries) {
             </div>
         `;
 
+        const editEntryBtn = li.querySelector(".editEntryBtn");
+        const deleteEntryBtn = li.querySelector(".deleteEntryBtn");
+        const viewEntry = li.querySelector(".entry-title");
+        
+        editEntryBtn.addEventListener('click', ()=>{
+            console.log("Editing an entry!");
+            window.location.href = `entry-editor.html?mode=edit&id=${entry.id}`;
+        })
+
+        deleteEntryBtn.addEventListener('click', ()=>{
+            if(confirm("Are you sure you want to delete the entry!!"))
+            {
+                console.log("Deleting an entry!");
+            }
+        })
+
+        viewEntry.addEventListener('click', ()=>{
+            console.log("Viewing an entry!");
+            window.location.href = `entry-editor.html?mode=view&id=${entry.id}`;
+        })
+
         entriesList.appendChild(li);
     });
 }
-*/

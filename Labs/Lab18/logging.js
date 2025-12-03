@@ -1,4 +1,4 @@
-import {signup, login} from './auth.js';
+import {signup, login, onChangeAuth} from './auth.js';
 
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -40,5 +40,12 @@ signinBtn.addEventListener('click', async (e)=>{
     }
     catch (error) {
         showMessage(error.message, true);
+    }
+})
+
+onChangeAuth((user) =>{
+    if(user)
+    {
+        window.location.href = "app.html";
     }
 })
